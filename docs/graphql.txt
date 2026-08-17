@@ -1,0 +1,45 @@
+--------------------------------------------------------------------------------------------------------
+GraphQL End Points:
+
+Use GraphQL Zero instead — https://graphqlzero.almansi.me/api — it's a GraphQL wrapper around JSONPlaceholder and supports full CRUD:
+--------------------------------------------------------------------------------------------------------
+Create Query =>
+
+mutation CreatePost {
+  createPost(input: { title: "New Post", body: "Hello world" }) {
+    id
+    title
+    body
+  }
+}
+--------------------------------------------------------------------------------------------------------
+Read (with pagination) Query =>
+
+query GetPosts($page: Int, $limit: Int) {
+  posts(options: { paginate: { page: $page, limit: $limit } }) {
+    data {
+      id
+      title
+      body
+    }
+    meta {
+      totalCount
+    }
+  }
+}
+--------------------------------------------------------------------------------------------------------
+Update Query =>
+
+mutation UpdatePost {
+  updatePost(id: 1, input: { title: "Updated Title" }) {
+    id
+    title
+  }
+}
+--------------------------------------------------------------------------------------------------------
+Delete Query =>
+
+mutation DeletePost {
+  deletePost(id: 1)
+}
+--------------------------------------------------------------------------------------------------------
