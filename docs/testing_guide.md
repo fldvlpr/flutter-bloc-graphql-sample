@@ -247,3 +247,28 @@ testWidgets('shows validation error when form is submitted empty', (tester) asyn
   expect(find.text('Body is required'), findsOneWidget);
 });
 ```
+
+## 7. What to Test (and What to Skip)
+
+As a beginner, a common trap is trying to write a unit test for absolutely every single file in your project. This is a waste of time. You should base your decisions on the **Value vs. Effort Rule**.
+
+### Why didn't we test the `PostProvider`?
+The `PostProvider` has one job: taking a string (a GraphQL query) and firing it into the internet. 
+To unit test it, we would have to create a massive, complex mock of the `GraphQLClient` and the internet itself. 
+
+If we mock the internet, we aren't really testing anything useful. If the backend team completely changes the GraphQL schema tomorrow, our `PostProvider` unit test would **still pass** (giving us a false sense of security) because we mocked the old response! 
+
+### The Restaurant Analogy
+Think of your Flutter app as a restaurant:
+
+1. **The BLoC (The Waiter):** Takes orders from the user, handles complaints, and brings the food to the table. **Must Test.** It holds the core logic and state of your app.
+2. **The Repository (The Chef):** Takes raw ingredients and turns them into a finished Meal (a Dart Model). **Must Test.** It ensures bad ingredients (errors) are thrown away and good ingredients are parsed correctly.
+3. **The Provider (The Delivery Truck):** Blindly drives raw boxes from the farm (the internet) to the kitchen. **Skip Unit Testing.** The only true way to test if the truck works is to actually talk to the farm. Mocking the farm provides no value.
+4. **The UI (The Dining Room):** Where the user sits. **Highly Recommended to Test.** You want to ensure the chairs aren't broken and the menu is readable.
+
+### The Golden Rule of Thumb
+- **Core Logic (BLoCs / ViewModels):** 100% MUST test.
+- **Data Parsing & Coordination (Repositories):** MUST test. This proves your data mapping works.
+- **UI (Widget Tests):** HIGHLY recommended for main user flows (like form validation).
+- **Network Clients (Providers / API Classes):** SKIP unit testing. If you want to test these, write an "Integration Test" that talks to a real staging server. Mocking network clients takes massive effort for very little reward.
+- **Data Models (like `Post`):** If they only have a `fromJson` factory, your Repository test already tests them. If they have complex custom logic (e.g., `post.isExpired()`), you should write a small test for them.
